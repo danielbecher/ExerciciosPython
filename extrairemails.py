@@ -29,6 +29,11 @@ def contaEmail():
     with open('emails.txt') as arqEmails:
         return sum(1 for line in arqEmails)
 
+#Esta função faz a contabilização de quantos comentários existem no arquivo .json
+def contaComentario():
+    with open('wp_comments.json', encoding="utf8") as arqComentarios:
+        return sum(1 for line in arqComentarios)
+
 #Esta função exporta no arquivo .txt os endereços válidos após fazer as devidas checagens.
 def exportatxt(f):
     if checaEmail (f) == True:
@@ -39,11 +44,21 @@ def exportatxt(f):
 
 #Aqui está o motor que lerá o arquivo .json e fará a exportação dos endereços válidos
 with open("wp_comments.json", encoding='utf-8') as meu_json:
+    print("*"*40)
+    print("*** Iniciando a leitura do JSON ***")
     dados = json.load(meu_json)
+    print("*" * 40)
+    print("*** Verificando endereços válidos ***")
+    print("*" * 40)
+    print("*** Exportando e-mails ***")
     for i in dados:
         emails.append(dados[controle]['comment_author_email'])
         endereco = dados[controle]['comment_author_email']
         exportatxt(endereco)
         controle += 1
     contarenderecos = contaEmail()
-    print('Foram extraídos {} endereços de e-mail deste arquivo!'.format(contarenderecos))
+    contarcomentarios = contaComentario()
+    print("*" * 40)
+    print('A tabela do banco de dados possui {} comentários.'.format(contarcomentarios))
+    print('Destes comentários, {} são endereços de e-mail válidos e foram exportados'.format(contarenderecos))
+    print("*" * 40)
