@@ -21,8 +21,9 @@ controle = 0
 
 #Esta função checa se o e-mail tem formato válido
 def checaEmail(email):
-    if (re.search(regex, email)):
-        return True
+    for i in email:
+        if (re.search(regex, email)):
+            return True
 
 #Esta função faz a contabilização de quantos e-mails foram extraídos da base de dados e salvos no arquivo .txt
 def contaEmail():
@@ -35,12 +36,24 @@ def contaComentario():
         return sum(1 for line in arqComentarios)
 
 #Esta função exporta no arquivo .txt os endereços válidos após fazer as devidas checagens.
-def exportatxt(f):
-    if checaEmail (f) == True:
-        arquivotxt = open('emails.txt', 'a')
-        arquivotxt.write(f)
-        arquivotxt.write("\n")
-        arquivotxt.close()
+def exportatxt(listaemails):
+    for i in listaemails:
+        if checaEmail(i) == True:
+            arquivotxt = open('emails.txt', 'a')
+            arquivotxt.write(i)
+            arquivotxt.write("\n")
+            arquivotxt.close()
+
+#Esta função verifica se existem e-mails duplicados na lista evitando falsos-positivos.
+def verificaDup(endereco):
+    listalimpa = []
+    listasuja = []
+    for i in endereco:
+        if i not in listalimpa:
+            listalimpa.append(i)
+        else:
+            listasuja.append(i)
+    return listalimpa
 
 #Aqui está o motor que lerá o arquivo .json e fará a exportação dos endereços válidos
 with open("wp_comments.json", encoding='utf-8') as meu_json:
@@ -54,8 +67,9 @@ with open("wp_comments.json", encoding='utf-8') as meu_json:
     for i in dados:
         emails.append(dados[controle]['comment_author_email'])
         endereco = dados[controle]['comment_author_email']
-        exportatxt(endereco)
         controle += 1
+    emailslimpos = verificaDup(emails)
+    exportatxt(emailslimpos)
     contarenderecos = contaEmail()
     contarcomentarios = contaComentario()
     print("*" * 40)
